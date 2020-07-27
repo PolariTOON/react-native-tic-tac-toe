@@ -1,0 +1,6 @@
+*.iml
+.DS_Store
+Thumbs.db
+/package-lock.json
+/.idea/
+/node_modules/
