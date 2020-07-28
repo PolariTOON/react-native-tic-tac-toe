@@ -4,3 +4,6 @@ Thumbs.db
 /package-lock.json
 /.idea/
 /node_modules/
+/android/.gradle/
+/android/app/build/
+/android/build/

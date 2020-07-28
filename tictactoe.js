@@ -86,7 +86,7 @@ function Board({board, fill}) {
     </View>
   );
 }
-export default class Game extends React.Component {
+export class Game extends React.Component {
   constructor(props) {
     super(props);
     const step = 0;
