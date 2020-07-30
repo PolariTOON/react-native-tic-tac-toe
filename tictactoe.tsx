@@ -1,38 +1,38 @@
 import React from "react";
 import {Pressable, Text, View} from "react-native";
 import {styles} from "./styles.js";
-const noPlayer = "";
-const players = ["O", "X"];
-const size = 3;
-const length = size ** 2;
-function calcLength() {
+const noPlayer: string = "";
+const players: string[] = ["O", "X"];
+const size: number = 3;
+const length: number = size ** 2;
+function calcLength(): number {
   return length;
 }
-function calcNoPlayer() {
+function calcNoPlayer(): string {
   return noPlayer;
 }
-function calcPlayer(step) {
+function calcPlayer(step: number): string {
   return players[step % players.length];
 }
-function isWinner(board, player) {
-  rows: for (let i = 0; i < size; ++i) {
-    for (let j = 0; j < size; ++j) {
+function isWinner(board: string[], player: string): boolean {
+  rows: for (let i: number = 0; i < size; ++i) {
+    for (let j: number = 0; j < size; ++j) {
       if (board[i * size + j] !== player) {
         continue rows;
       }
     }
     return true;
   }
-  columns: for (let i = 0; i < size; ++i) {
-    for (let j = 0; j < size; ++j) {
+  columns: for (let i: number = 0; i < size; ++i) {
+    for (let j: number = 0; j < size; ++j) {
       if (board[j * size + i] !== player) {
         continue columns;
       }
     }
     return true;
   }
-  diagonals: for (let i = 0; i < 2; ++i) {
-    for (let j = 0; j < size; ++j) {
+  diagonals: for (let i: number = 0; i < 2; ++i) {
+    for (let j: number = 0; j < size; ++j) {
       if (board[(i + j) * (size + 1 - i * 2)] !== player) {
         continue diagonals;
       }
@@ -41,9 +41,9 @@ function isWinner(board, player) {
   }
   return false;
 }
-function Status({status, clear, undo, redo}) {
-  const {step, winner} = status;
-  const text = winner ? (
+function Status({status, clear, undo, redo}: {status: {step: number, winner: boolean}, clear: () => void, undo: () => void, redo: () => void}): JSX.Element {
+  const {step, winner}: {step: number, winner: boolean} = status;
+  const text: string = winner ? (
     `Winner: ${calcPlayer(step)}`
   ) : step === calcLength() ? (
     "No winner..."
@@ -69,8 +69,8 @@ function Status({status, clear, undo, redo}) {
     </View>
   );
 }
-function Board({board, fill}) {
-  const cells = [];
+function Board({board, fill}: {board: string[], fill: (index: number) => void}): JSX.Element {
+  const cells: Element[] = [];
   for (const [index, player] of board.entries()) {
     cells.push(
       <Pressable style={styles.boardGridRowButton} key={index} onPress={() => fill(index)}>
@@ -78,9 +78,9 @@ function Board({board, fill}) {
       </Pressable>
     );
   }
-  const rows = [];
-  for (let index = 0; index < size; ++index) {
-    const slice = cells.slice(index * size, (index + 1) * size);
+  const rows: Element[] = [];
+  for (let index: number = 0; index < size; ++index) {
+    const slice: Element[] = cells.slice(index * size, (index + 1) * size);
     rows.push(
       <View style={styles.boardGridRow} key={index}>{slice}</View>
     );
@@ -91,66 +91,66 @@ function Board({board, fill}) {
     </View>
   );
 }
-export class Game extends React.Component {
-  constructor(props) {
+export class Game extends React.Component<{}, {step: number, history: {board: string[], winner: boolean}[]}> {
+  constructor(props: {}) {
     super(props);
-    const step = 0;
-    const length = calcLength();
-    const noPlayer = calcNoPlayer();
-    const board = Array.from({length}).fill(noPlayer);
-    const winner = false;
-    const history = [{board, winner}];
+    const step: number = 0;
+    const length: number = calcLength();
+    const noPlayer: string = calcNoPlayer();
+    const board: string[] = Array.from<string>({length}).fill(noPlayer);
+    const winner: boolean = false;
+    const history: {board: string[], winner: boolean}[] = [{board, winner}];
     this.state = {step, history};
   }
   render() {
-    const {step, history} = this.state;
-    const {board, winner} = history[step];
-    const status = {step, winner};
+    const {step, history}: {step: number, history: {board: string[], winner: boolean}[]} = this.state;
+    const {board, winner}: {board: string[], winner: boolean} = history[step];
+    const status: {step: number, winner: boolean} = {step, winner};
     return (
       <View style={styles.root}>
         <Status status={status} clear={() => this.clear()} undo={() => this.undo()} redo={() => this.redo()}/>
-        <Board board={board} fill={(index) => this.fill(index)}/>
+        <Board board={board} fill={(index: number) => this.fill(index)}/>
       </View>
     );
   }
-  fill(index) {
-    const {step, history} = this.state;
-    const {board, winner} = history[step];
-    const noPlayer = calcNoPlayer();
+  fill(index: number) {
+    const {step, history}: {step: number, history: {board: string[], winner: boolean}[]} = this.state;
+    const {board, winner}: {board: string[], winner: boolean} = history[step];
+    const noPlayer: string = calcNoPlayer();
     if (winner || board[index] !== noPlayer) {
       return;
     }
-    const nextStep = step + 1;
-    const nextBoard = board.slice();
-    const nextPlayer = calcPlayer(nextStep);
+    const nextStep: number = step + 1;
+    const nextBoard: string[] = board.slice();
+    const nextPlayer: string = calcPlayer(nextStep);
     nextBoard[index] = nextPlayer;
-    const nextWinner = isWinner(nextBoard, nextPlayer);
-    const nextHistory = history.slice(0, nextStep);
+    const nextWinner: boolean = isWinner(nextBoard, nextPlayer);
+    const nextHistory: {board: string[], winner: boolean}[] = history.slice(0, nextStep);
     nextHistory.push({board: nextBoard, winner: nextWinner});
     this.setState({step: nextStep, history: nextHistory});
   }
   clear() {
-    const {history} = this.state;
-    const nextStep = 0;
-    const nextHistory = history.slice(0, 1);
+    const {history}: {history: {board: string[], winner: boolean}[]} = this.state;
+    const nextStep: number = 0;
+    const nextHistory: {board: string[], winner: boolean}[] = history.slice(0, 1);
     this.setState({step: nextStep, history: nextHistory});
   }
   undo() {
-    const {step, history} = this.state;
+    const {step, history}: {step: number, history: {board: string[], winner: boolean}[]} = this.state;
     if (step === 0) {
       return;
     }
-    const nextStep = step - 1;
-    const nextHistory = history.slice();
+    const nextStep: number = step - 1;
+    const nextHistory: {board: string[], winner: boolean}[] = history.slice();
     this.setState({step: nextStep, history: nextHistory});
   }
   redo() {
-    const {step, history} = this.state;
+    const {step, history}: {step: number, history: {board: string[], winner: boolean}[]} = this.state;
     if (step + 1 === history.length) {
       return;
     }
-    const nextStep = step + 1;
-    const nextHistory = history.slice();
+    const nextStep: number = step + 1;
+    const nextHistory: {board: string[], winner: boolean}[] = history.slice();
     this.setState({step: nextStep, history: nextHistory});
   }
 }
