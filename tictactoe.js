@@ -1,22 +1,8 @@
 import React from "react";
-import {
-  Pressable,
-  View,
-  Text,
-} from "react-native";
+import {Pressable, Text, View} from "react-native";
 import {styles} from "./styles.js";
 const noPlayer = "";
 const players = ["O", "X"];
-const lines = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-];
 const size = 3;
 const length = size ** 2;
 function calcLength() {
@@ -29,17 +15,33 @@ function calcPlayer(step) {
   return players[step % players.length];
 }
 function isWinner(board, player) {
-  for (const [a, b, c] of lines) {
-    const cellA = board[a];
-    const cellB = board[b];
-    const cellC = board[c];
-    if (cellA === player && cellB === player && cellC === player) {
-      return true;
+  rows: for (let i = 0; i < size; ++i) {
+    for (let j = 0; j < size; ++j) {
+      if (board[i * size + j] !== player) {
+        continue rows;
+      }
     }
+    return true;
+  }
+  columns: for (let i = 0; i < size; ++i) {
+    for (let j = 0; j < size; ++j) {
+      if (board[j * size + i] !== player) {
+        continue columns;
+      }
+    }
+    return true;
+  }
+  diagonals: for (let i = 0; i < 2; ++i) {
+    for (let j = 0; j < size; ++j) {
+      if (board[(i + j) * (size + 1 - i * 2)] !== player) {
+        continue diagonals;
+      }
+    }
+    return true;
   }
   return false;
 }
-function Status({status, undo, redo}) {
+function Status({status, clear, undo, redo}) {
   const {step, winner} = status;
   const text = winner ? (
     `Winner: ${calcPlayer(step)}`
@@ -54,6 +56,9 @@ function Status({status, undo, redo}) {
         <Text style={styles.statusParagraphText}>{text}</Text>
       </View>
       <View style={styles.statusMenu}>
+        <Pressable style={styles.statusMenuButton} onPress={() => clear()}>
+          <Text style={styles.statusMenuButtonText}>Clear</Text>
+        </Pressable>
         <Pressable style={styles.statusMenuButton} onPress={() => undo()}>
           <Text style={styles.statusMenuButtonText}>Undo</Text>
         </Pressable>
@@ -75,7 +80,7 @@ function Board({board, fill}) {
   }
   const rows = [];
   for (let index = 0; index < size; ++index) {
-    const slice = cells.slice(index * 3, (index + 1) * 3);
+    const slice = cells.slice(index * size, (index + 1) * size);
     rows.push(
       <View style={styles.boardGridRow} key={index}>{slice}</View>
     );
@@ -103,7 +108,7 @@ export class Game extends React.Component {
     const status = {step, winner};
     return (
       <View style={styles.root}>
-        <Status status={status} undo={() => this.undo()} redo={() => this.redo()}/>
+        <Status status={status} clear={() => this.clear()} undo={() => this.undo()} redo={() => this.redo()}/>
         <Board board={board} fill={(index) => this.fill(index)}/>
       </View>
     );
@@ -122,6 +127,12 @@ export class Game extends React.Component {
     const nextWinner = isWinner(nextBoard, nextPlayer);
     const nextHistory = history.slice(0, nextStep);
     nextHistory.push({board: nextBoard, winner: nextWinner});
+    this.setState({step: nextStep, history: nextHistory});
+  }
+  clear() {
+    const {history} = this.state;
+    const nextStep = 0;
+    const nextHistory = history.slice(0, 1);
     this.setState({step: nextStep, history: nextHistory});
   }
   undo() {
