@@ -1,10 +1,13 @@
 import React from "react";
 import {Pressable, Text, View} from "react-native";
 import {styles} from "./styles.js";
-const noPlayer: string = "";
-const players: string[] = ["O", "X"];
 const size: number = 3;
 const length: number = size ** 2;
+const noPlayer: string = "";
+const players: string[] = ["O", "X"];
+function calcSize(): number {
+  return size;
+}
 function calcLength(): number {
   return length;
 }
@@ -15,6 +18,7 @@ function calcPlayer(step: number): string {
   return players[step % players.length];
 }
 function isWinner(board: string[], player: string): boolean {
+  const size: number = calcSize();
   rows: for (let i: number = 0; i < size; ++i) {
     for (let j: number = 0; j < size; ++j) {
       if (board[i * size + j] !== player) {
@@ -70,7 +74,8 @@ function Status({status, clear, undo, redo}: {status: {step: number, winner: boo
   );
 }
 function Board({board, fill}: {board: string[], fill: (index: number) => void}): JSX.Element {
-  const cells: Element[] = [];
+  const size: number = calcSize();
+  const cells: JSX.Element[] = [];
   for (const [index, player] of board.entries()) {
     cells.push(
       <Pressable style={styles.boardGridRowButton} key={index} onPress={() => fill(index)}>
@@ -78,9 +83,9 @@ function Board({board, fill}: {board: string[], fill: (index: number) => void}):
       </Pressable>
     );
   }
-  const rows: Element[] = [];
+  const rows: JSX.Element[] = [];
   for (let index: number = 0; index < size; ++index) {
-    const slice: Element[] = cells.slice(index * size, (index + 1) * size);
+    const slice: JSX.Element[] = cells.slice(index * size, (index + 1) * size);
     rows.push(
       <View style={styles.boardGridRow} key={index}>{slice}</View>
     );
@@ -102,7 +107,7 @@ export class Game extends React.Component<{}, {step: number, history: {board: st
     const history: {board: string[], winner: boolean}[] = [{board, winner}];
     this.state = {step, history};
   }
-  render() {
+  render(): JSX.Element {
     const {step, history}: {step: number, history: {board: string[], winner: boolean}[]} = this.state;
     const {board, winner}: {board: string[], winner: boolean} = history[step];
     const status: {step: number, winner: boolean} = {step, winner};
@@ -113,7 +118,7 @@ export class Game extends React.Component<{}, {step: number, history: {board: st
       </View>
     );
   }
-  fill(index: number) {
+  fill(index: number): void {
     const {step, history}: {step: number, history: {board: string[], winner: boolean}[]} = this.state;
     const {board, winner}: {board: string[], winner: boolean} = history[step];
     const noPlayer: string = calcNoPlayer();
@@ -129,13 +134,13 @@ export class Game extends React.Component<{}, {step: number, history: {board: st
     nextHistory.push({board: nextBoard, winner: nextWinner});
     this.setState({step: nextStep, history: nextHistory});
   }
-  clear() {
+  clear(): void {
     const {history}: {history: {board: string[], winner: boolean}[]} = this.state;
     const nextStep: number = 0;
     const nextHistory: {board: string[], winner: boolean}[] = history.slice(0, 1);
     this.setState({step: nextStep, history: nextHistory});
   }
-  undo() {
+  undo(): void {
     const {step, history}: {step: number, history: {board: string[], winner: boolean}[]} = this.state;
     if (step === 0) {
       return;
@@ -144,7 +149,7 @@ export class Game extends React.Component<{}, {step: number, history: {board: st
     const nextHistory: {board: string[], winner: boolean}[] = history.slice();
     this.setState({step: nextStep, history: nextHistory});
   }
-  redo() {
+  redo(): void {
     const {step, history}: {step: number, history: {board: string[], winner: boolean}[]} = this.state;
     if (step + 1 === history.length) {
       return;

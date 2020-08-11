@@ -11,7 +11,6 @@ export const styles = StyleSheet.create({
   },
   statusParagraph: {
     justifyContent: "center",
-    alignItems: "center",
     flex: 1,
     margin: 10,
     padding: 10,
@@ -57,6 +56,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     margin: 5,
     padding: 10,
+    borderRadius: 5,
     backgroundColor: light,
   },
   boardGridRowButtonText: {
