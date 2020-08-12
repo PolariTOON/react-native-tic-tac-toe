@@ -39,18 +39,15 @@ export const styles = StyleSheet.create({
   },
   board: {
     flex: 1,
+    padding: 5,
     backgroundColor: dark,
   },
-  boardGrid: {
-    flex: 1,
-    paddingVertical: 5,
-  },
-  boardGridRow: {
+  boardTrack: {
     flex: 1,
     flexDirection: "row",
     paddingHorizontal: 5,
   },
-  boardGridRowButton: {
+  boardTrackButton: {
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
@@ -59,7 +56,7 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: light,
   },
-  boardGridRowButtonText: {
+  boardTrackButtonText: {
     color: dark,
     lineHeight: 20,
     fontSize: 16,
