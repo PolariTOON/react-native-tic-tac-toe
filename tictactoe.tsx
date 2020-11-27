@@ -1,21 +1,21 @@
 import React from "react";
 import {Pressable, Text, View} from "react-native";
-import {styles} from "./styles.js";
+import {styles} from "./styles";
 type HistoryStep = {
   squares: string[];
   winner: boolean;
-}
+};
 type StatusData = {
   step: number;
   winner: boolean;
-}
+};
 type BoardData = {
   squares: string[];
-}
+};
 type GameData = {
   step: number;
   history: HistoryStep[];
-}
+};
 const size: number = 3;
 const length: number = size ** 2;
 const noPlayer: string = "";
